@@ -1,0 +1,45 @@
+% Function to calculate and plot of the design spectrum
+% Inputs:
+% Ss: The mapped MCER spectral response acceleration parameter at short 
+%     periods as determined in accordance with ASCE 7-26 Section 11.4.2
+% S1: The mapped MCER spectral response acceleration parameter at a period 
+%     of 1 s as determined in accordance with ASCE 7-26 Section 11.4.2
+% Fa: Site coefficient, see ASCE 7-26 Ch 11
+% Fv: Site coefficient, see ASCE 7-26 Ch 11
+% TL: Long-period transition period(s) shown in ASCE 7-26 Figs. 22-14 
+%     through 22-17.
+% maxT: Controls the upper limit in the x axis 
+% maxY: Controls the upper limit in the y axis 
+% Outputs:
+% t: time vector
+% Sa: acceleration vector [g]
+function [t, Sa] = plot_design_spectrum(Ss,S1,Fa,Fv,TL,maxT,maxY)
+% Previous calculations
+SMS = Fa*Ss;
+SM1 = Fv*S1;
+SDS = 2/3*SMS;
+SD1 = 2/3*SM1;
+T0 = 0.2*(SD1/SDS);
+TS = SD1/SDS;
+% Create time vectors
+t1 = linspace(0,T0)';
+t2 = linspace(T0,TS)';
+t3 = linspace(TS,TL)';
+t4 = linspace(TL,1.25*TL)';
+% Calculate parts
+Sa1 = SDS.*(0.4+0.6*t1/T0);
+Sa2 = SDS.*(1+0*t2);
+Sa3 = SD1./t3;
+Sa4 = SD1*TL./(t4.^2);
+% Total spectrum
+t = [t1;t2;t3;t4];
+Sa = [Sa1;Sa2;Sa3;Sa4];
+% Plot
+figure()
+plot(t,Sa,'Color','k')
+xlim([0 maxT])
+ylim([0 maxY])
+xlabel('T [s]')
+ylabel('Sa [g]')
+title("Design response spectrum")
+end
